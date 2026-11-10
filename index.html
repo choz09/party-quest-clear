@@ -60,7 +60,7 @@ textarea{width:100%;min-height:150px;background:var(--card);color:var(--fg);bord
   </div>
   <ol class="steps"><li>写真に保存したら、Xの投稿画面を開く</li><li>投稿画面で、保存した画像を選んで添付する</li><li>投稿したら、下の「今回分を達成済みにする」を押す</li></ol>
   <div class="row" style="margin-top:10px">
-   <button id="commit">今回分を達成済みにする</button><button id="all">全部ON</button><button id="none">リセット</button>
+   <button id="commit">今回分を達成済みにする</button><button id="none">リセット</button>
   </div>
   <p id="msg"></p>
  </div>
@@ -156,7 +156,6 @@ function twoTap(btn,label,fn,note){btn.onclick=()=>{if(armed===btn){armed=null;b
  armed=btn;btn.textContent=note;setTimeout(()=>{if(armed===btn){armed=null;btn.textContent=label}},4000)}}
 twoTap(document.getElementById('commit'),'今回分を達成済みにする',()=>{st=st.map(v=>v===2?1:v);edited=false;changed();msg.textContent='今回分を、達成済みにしました。'},'もう一度押すと確定');
 twoTap(document.getElementById('none'),'リセット',()=>{st.fill(0);edited=false;changed();msg.textContent='すべてリセットしました。'},'もう一度押すと全部消える');
-document.getElementById('all').onclick=()=>{st=st.map(v=>v===0?2:v);edited=false;changed()};
 // 写真に保存: 共有画面を開く(「画像を保存」で写真に入る)。使えない環境では画像を表示して長押し保存
 function showFallback(blob){out.src=URL.createObjectURL(blob);out.style.display='block';cv.style.display='none';msg.textContent='表示された画像を長押しして、「写真に追加」(iPhone)または「画像をダウンロード」(Android)を選んでください。チェックを変えると、また編集画面に戻ります。'}
 document.getElementById('save').onclick=async()=>{
