@@ -2,30 +2,35 @@
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
 <title>PARTY QUEST クリア画像</title>
 <style>
-/* Layout: phone-first single column; preview on top, mission checklist below, save bar last. Dark parchment-and-gold to match the event key visual. */
+/* Layout: phone-first single column; preview on top, mission checklist, post text, actions. Dark parchment-and-gold to match the event key visual. */
 :root{--bg:#14110d;--fg:#f3e7c9;--mute:#a89a7a;--gold:#e0b24a;--line:#3a3023;--card:#1f1a13;--on:#2b2111;--ink:#241a08;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 "Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 28px}
 .wrap{max-width:960px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
-@media(min-width:820px){.wrap{grid-template-columns:minmax(0,1fr) minmax(0,400px);align-items:start}}
+@media(min-width:820px){.wrap{grid-template-columns:minmax(0,1fr) minmax(0,420px);align-items:start}}
 canvas,#out{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;background:#000}
-#out{display:none;-webkit-touch-callout:default}
+#out{display:none}
 h1{font-size:17px;margin:0 0 4px;text-wrap:balance}
+h2{font-size:14px;margin:16px 0 6px;color:var(--gold)}
 .sub{margin:0 0 10px;color:var(--mute);font-size:13px}
 .list{display:grid;gap:6px;min-width:0}
 label.m{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;min-width:0}
-label.m span{min-width:0}
+label.m span{min-width:0;flex:1}
 label.m input{width:22px;height:22px;accent-color:var(--gold);flex:none}
 label.m.on{border-color:var(--gold);background:var(--on)}
 label.m b{color:var(--gold);min-width:1.1em;font-variant-numeric:tabular-nums}
+.tag{flex:none;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--gold);color:var(--ink);font-weight:700}
+.tag.old{background:transparent;color:var(--mute);border:1px solid var(--line);font-weight:400}
 .opts{margin:12px 0;font-size:14px;display:grid;gap:10px}
 .opts label{display:flex;gap:8px;align-items:center}
 .opts input[type=range]{flex:1;min-width:0;accent-color:var(--gold)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-button{font:inherit;padding:12px 16px;border-radius:8px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;min-height:44px}
-button.p{background:var(--gold);color:var(--ink);font-weight:700;flex:1 1 100%}
-button:focus-visible,input:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+button,a.btn{font:inherit;padding:12px 16px;border-radius:8px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+button.p,a.btn.p{background:var(--gold);color:var(--ink);font-weight:700;flex:1 1 100%}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a.btn:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+textarea{width:100%;min-height:150px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:12px;font:inherit;line-height:1.6;resize:vertical}
 #msg{min-height:1.5em;font-size:13px;color:var(--mute);margin:10px 0 0}
+.steps{margin:12px 0 0;padding-left:1.3em;font-size:13px;color:var(--mute)}
 </style></head><body>
 <div class="wrap">
  <div>
@@ -34,38 +39,86 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--fg);outline-off
  </div>
  <div>
   <h1>クリアしたミッションにチェック</h1>
-  <p class="sub">チェックした行が金色に光ります。</p>
+  <p class="sub">チェックした行が金色に光ります。今回チェックしたものが「今回」になり、投稿文に入ります。</p>
   <div class="list" id="list"></div>
   <div class="opts">
    <label><input type="checkbox" id="dim"> 未達成の行を少し暗くする</label>
    <label><input type="checkbox" id="spark" checked> 角にキラッを入れる</label>
    <label>光の強さ <input type="range" id="pow" min="50" max="150" value="100"></label>
   </div>
-  <div class="row"><button class="p" id="save">写真に保存</button><button id="all">全部ON</button><button id="none">リセット</button></div>
+
+  <h2>Xの投稿文</h2>
+  <textarea id="txt" placeholder="ミッションにチェックすると、投稿文が入ります"></textarea>
+  <div class="row" style="margin-top:8px">
+   <button id="regen">文面を作り直す</button><button id="copy">文面をコピー</button>
+  </div>
+
+  <h2>投稿の手順</h2>
+  <div class="row">
+   <button class="p" id="save">① 写真に保存</button>
+   <a class="btn p" id="post" href="#" target="_blank" rel="noopener">② Xの投稿画面を開く</a>
+  </div>
+  <ol class="steps"><li>写真に保存したら、Xの投稿画面を開く</li><li>投稿画面で、保存した画像を選んで添付する</li><li>投稿したら、下の「今回分を達成済みにする」を押す</li></ol>
+  <div class="row" style="margin-top:10px">
+   <button id="commit">今回分を達成済みにする</button><button id="all">全部ON</button><button id="none">リセット</button>
+  </div>
   <p id="msg"></p>
  </div>
 </div>
 <script>
 const SRC="slide2_base.png";
-const M=["19時半までにリングゲームスタート(3名様来店)","20時までにリングゲームが1卓満員になる(参加者8名)","リングゲームが同時に2卓立つ","MIX GAME(テキサスホールデム以外)の卓が立つ","新規のお客様が1名以上来店","フラッシュオーバーフラッシュが出る","学生のお客様が2名以上来店","クアッズ以上の役が出る","99のセットでポットを獲得"];
+const M=["19時半までにリングゲームスタート（3名様来店）","20時までにリングゲームが1卓満員になる（参加者８名）","リングゲームが同時に2卓立つ","MIX GAME（テキサスホールデム以外）の卓が立つ","新規のお客様が1名以上来店","フラッシュオーバーフラッシュが出る","学生のお客様が2名以上来店","クアッズ以上の役が出る","99のセットでポットを獲得"];
+const NUM=["①","②","③","④","⑤","⑥","⑦","⑧","⑨"];
 const ROWS=[[240,338],[342,432],[436,524],[530,620],[624,714],[718,808],[814,904],[908,1002],[1010,1104]];
 const X0=172,X1=928;
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),out=document.getElementById('out'),msg=document.getElementById('msg');
-const img=new Image();const on=new Array(9).fill(false);
+const txt=document.getElementById('txt'),post=document.getElementById('post');
+const img=new Image();
+// 状態: st[i]=0 未達成 / 1 達成済み(前回まで) / 2 今回達成
+let st=new Array(9).fill(0);let edited=false;
+const KEY='pq-clear-state',OKEY='pq-clear-opts';
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 const list=document.getElementById('list');
-M.forEach((t,i)=>{const l=document.createElement('label');l.className='m';
+const rows=M.map((t,i)=>{const l=document.createElement('label');l.className='m';
  const inp=document.createElement('input');inp.type='checkbox';inp.id='m'+(i+1);
  const b=document.createElement('b');b.textContent=i+1;const s=document.createElement('span');s.textContent=t;
- l.append(inp,b,s);inp.onchange=()=>{on[i]=inp.checked;l.classList.toggle('on',on[i]);draw()};list.appendChild(l)});
+ const tag=document.createElement('em');tag.className='tag';tag.style.fontStyle='normal';tag.hidden=true;
+ l.append(inp,b,s,tag);
+ inp.onchange=()=>{st[i]=inp.checked?2:0;changed(true)};
+ list.appendChild(l);return {l,inp,tag}});
+function syncRows(){rows.forEach((r,i)=>{r.inp.checked=st[i]>0;r.l.classList.toggle('on',st[i]>0);
+ r.tag.hidden=st[i]===0;r.tag.textContent=st[i]===2?'今回':'達成済み';r.tag.classList.toggle('old',st[i]===1)})}
+function buildText(){
+ const fresh=st.map((v,i)=>v===2?i:-1).filter(i=>i>=0);
+ if(!fresh.length)return '';
+ const done=st.filter(v=>v>0).length;
+ let t='【Nine PARTY QUEST⚔️】\nミッション'+fresh.map(i=>NUM[i]).join('')+'クリアです✨\n';
+ t+=fresh.map(i=>NUM[i]+' '+M[i]).join('\n')+'\n\n';
+ t+=done===9?'全ミッションクリア！！🎉\nご来店のみなさま、ありがとうございます！':`現在${done}／9ミッションクリア！`;
+ return t;
+}
+function updatePost(){post.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(txt.value)}
+function changed(userAction){
+ syncRows();
+ if(!edited||!txt.value){txt.value=buildText();edited=false}
+ updatePost();draw();
+ lsSet(KEY,st);
+}
+txt.oninput=()=>{edited=true;updatePost()};
+document.getElementById('regen').onclick=()=>{edited=false;txt.value=buildText();updatePost();msg.textContent='文面を作り直しました。'};
+document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(txt.value);msg.textContent='文面をコピーしました。'}catch(e){txt.select();msg.textContent='文面を選択しました。コピーしてください。'}};
+// 描画
 function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
 function star(x,y,s){ctx.save();ctx.translate(x,y);ctx.beginPath();for(let k=0;k<8;k++){const a=k*Math.PI/4,r=k%2?s*.18:s;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}ctx.closePath();ctx.fillStyle='#fff6c8';ctx.shadowColor='#ffcf3a';ctx.shadowBlur=14;ctx.fill();ctx.restore()}
+let lastBlob=null,tm=null;
 function draw(){
  ctx.clearRect(0,0,1080,1350);ctx.drawImage(img,0,0,1080,1350);
  const k=document.getElementById('pow').value/100,dim=document.getElementById('dim').checked,sp=document.getElementById('spark').checked;
- const any=on.some(Boolean);
+ const any=st.some(v=>v>0);
  ROWS.forEach(([y0,y1],i)=>{
   const x=X0,y=y0,w=X1-X0,h=y1-y0;
-  if(on[i]){
+  if(st[i]>0){
    ctx.save();
    const g=ctx.createLinearGradient(x,0,x+w,0);
    g.addColorStop(0,`rgba(255,196,48,${.30*k})`);g.addColorStop(.5,`rgba(255,226,120,${.42*k})`);g.addColorStop(1,`rgba(255,196,48,${.30*k})`);
@@ -79,27 +132,31 @@ function draw(){
   }else if(dim&&any){ctx.save();rr(x,y,w,h,16);ctx.fillStyle='rgba(30,18,4,.28)';ctx.fill();ctx.restore()}
  });
  out.style.display='none';cv.style.display='block';
+ clearTimeout(tm);tm=setTimeout(()=>cv.toBlob(b=>{lastBlob=b},'image/png'),120);
 }
-// 設定(光の強さなど)をこの端末のブラウザに覚えておく。使えない環境では初期値のまま動く
-const KEY='pq-clear-opts',OPT=['dim','spark','pow'];
-function loadOpts(){try{const o=JSON.parse(localStorage.getItem(KEY)||'{}');
+// 設定の保存
+function loadOpts(){const o=lsGet(OKEY)||{};
  if('dim' in o)document.getElementById('dim').checked=!!o.dim;
  if('spark' in o)document.getElementById('spark').checked=!!o.spark;
- if('pow' in o)document.getElementById('pow').value=o.pow}catch(e){}}
-function saveOpts(){try{localStorage.setItem(KEY,JSON.stringify({dim:document.getElementById('dim').checked,spark:document.getElementById('spark').checked,pow:document.getElementById('pow').value}))}catch(e){}}
+ if('pow' in o)document.getElementById('pow').value=o.pow}
+function saveOpts(){lsSet(OKEY,{dim:document.getElementById('dim').checked,spark:document.getElementById('spark').checked,pow:document.getElementById('pow').value})}
+['dim','spark','pow'].forEach(id=>document.getElementById(id).oninput=()=>{saveOpts();draw()});
+// 達成状態の復元
 loadOpts();
+const saved=lsGet(KEY);if(Array.isArray(saved)&&saved.length===9)st=saved.map(v=>v===1||v===2?v:0);
+syncRows();txt.value=buildText();updatePost();
 img.onload=()=>draw();img.src=SRC;
-OPT.forEach(id=>document.getElementById(id).oninput=()=>{saveOpts();draw()});
-function setAll(v){on.fill(v);[...list.children].forEach(l=>{l.classList.toggle('on',v);l.querySelector('input').checked=v});draw()}
-document.getElementById('all').onclick=()=>setAll(true);
-document.getElementById('none').onclick=()=>setAll(false);
-// 保存: 共有画面を開く(「画像を保存」で写真に入る)。使えない環境では画像を表示して長押し保存
-let lastBlob=null,tm=null;
-const _draw=draw;
-draw=function(){_draw();clearTimeout(tm);tm=setTimeout(()=>cv.toBlob(b=>{lastBlob=b},'image/png'),120)};
-function showFallback(blob){out.src=URL.createObjectURL(blob);out.style.display='block';cv.style.display='none';msg.textContent='表示された画像を長押しして、「写真に追加」(iPhone)または「画像をダウンロード」(Android)を選んでください。チェックを変えると、また光る画像に戻ります。'}
+// ボタン
+let armed=null;
+function twoTap(btn,label,fn,note){btn.onclick=()=>{if(armed===btn){armed=null;btn.textContent=label;fn();return}
+ armed=btn;btn.textContent=note;setTimeout(()=>{if(armed===btn){armed=null;btn.textContent=label}},4000)}}
+twoTap(document.getElementById('commit'),'今回分を達成済みにする',()=>{st=st.map(v=>v===2?1:v);edited=false;changed();msg.textContent='今回分を、達成済みにしました。'},'もう一度押すと確定');
+twoTap(document.getElementById('none'),'リセット',()=>{st.fill(0);edited=false;changed();msg.textContent='すべてリセットしました。'},'もう一度押すと全部消える');
+document.getElementById('all').onclick=()=>{st=st.map(v=>v===0?2:v);edited=false;changed()};
+// 写真に保存: 共有画面を開く(「画像を保存」で写真に入る)。使えない環境では画像を表示して長押し保存
+function showFallback(blob){out.src=URL.createObjectURL(blob);out.style.display='block';cv.style.display='none';msg.textContent='表示された画像を長押しして、「写真に追加」(iPhone)または「画像をダウンロード」(Android)を選んでください。チェックを変えると、また編集画面に戻ります。'}
 document.getElementById('save').onclick=async()=>{
- const n=on.filter(Boolean).length;
+ const n=st.filter(v=>v>0).length;
  const blob=lastBlob;if(!blob){msg.textContent='画像を準備中です。もう一度押してください。';return}
  const file=new File([blob],`party-quest-clear-${n}.png`,{type:'image/png'});
  try{
