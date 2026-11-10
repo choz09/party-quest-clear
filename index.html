@@ -95,6 +95,10 @@ function buildText(){
  const done=st.filter(v=>v>0).length;
  let t='【Nine PARTY QUEST⚔️】\nミッション'+fresh.map(i=>NUM[i]).join('')+'クリアです✨\n';
  t+=fresh.map(i=>NUM[i]+' '+M[i]).join('\n')+'\n\n';
+ const old=st.map((v,i)=>v===1?i:-1).filter(i=>i>=0);
+ if(old.length){
+  t+='現在クリア済みのミッション▼\n'+old.map(i=>{const m=M[i].match(/^(.*?)(（[^）]*）)$/);return NUM[i]+(m?m[1]+'\n  '+m[2]:M[i])}).join('\n')+'\n\n';
+ }
  t+=done===9?'全ミッションクリア！！🎉\nご来店のみなさま、ありがとうございます！':`現在${done}／9ミッションクリア！`;
  return t;
 }
